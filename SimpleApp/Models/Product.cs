@@ -5,11 +5,20 @@
 /// </summary>
 /// <param name="Name">The product name.</param>
 /// <param name="Price">The product price.</param>
-public record Product(string Name, decimal? Price)
+public class Product
 {
-    /// <summary>
-    /// Get a sample list of products.
-    /// </summary>
-    /// <returns>The sample list of products.</returns>
-    public static Product[] GetProducts() => new Product[] { new("Kayak", 275.00M), new("Lifejacket", 48.95M) };
+    /// <value>The product name.</value>
+    public string Name { get; set; } = string.Empty;
+
+    /// <value>The product price.</value>
+    public decimal? Price { get; set; }
+}
+
+public class ProductDataSource : IDataSource
+{
+    public IEnumerable<Product> Products => new Product[]
+        {
+            new Product { Name = "Kayak", Price = 275M },
+            new Product { Name = "Lifejacket", Price = 48.95M }
+        };
 }

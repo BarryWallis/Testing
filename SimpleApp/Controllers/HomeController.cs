@@ -6,5 +6,7 @@ namespace SimpleApp.Controllers;
 
 public class HomeController : Controller
 {
-    public ViewResult Index() => View(Product.GetProducts());
+    public IDataSource DataSource { get; set; } = new ProductDataSource();
+
+    public ViewResult Index() => View(DataSource.Products);
 }
