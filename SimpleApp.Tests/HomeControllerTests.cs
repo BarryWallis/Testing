@@ -1,16 +1,11 @@
-﻿using SimpleApp.Controllers;
+﻿using Moq;
+
+using SimpleApp.Controllers;
 using SimpleApp.Models;
 
 namespace SimpleApp.Tests;
 public class HomeControllerTests
 {
-    private class FakeDataSource : IDataSource
-    {
-        public FakeDataSource(Product[] products) => Products = products;
-
-        public IEnumerable<Product> Products { get; init; }
-    }
-
     [Fact]
     public void IndexActionModeIsComplete()
     {
@@ -20,17 +15,20 @@ public class HomeControllerTests
             new Product { Name = "P2", Price = 120.00M },
             new Product { Name = "P3", Price = 110.00M },
         };
-        IDataSource dataSource = new FakeDataSource(testProducts);
+        Mock<IDataSource> mock = new();
+        _ = mock.SetupGet(x => x.Products).Returns(testProducts);
         HomeController homeController = new()
         {
-            DataSource = dataSource
+            DataSource = mock.Object
         };
 
         IEnumerable<Product>? model = homeController.Index()?.ViewData.Model as IEnumerable<Product>;
 
-        Assert.Equal(dataSource.Products,
+        Assert.NotNull(model);
+        Assert.Equal(testProducts,
                      model,
                      Comparer.Get<Product>((p1, p2)
                         => p1?.Name == p2?.Name && p1?.Price == p2?.Price));
+        mock.VerifyGet(ds => ds.Products, Times.Once);
     }
 }
